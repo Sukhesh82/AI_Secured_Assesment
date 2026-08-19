@@ -1,0 +1,14 @@
+# Frontend (React/Vite)
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Backend (Spring Boot)
+backend/target/
+backend/.env
+*.jar
+
+# IDEs and Editors
+.idea/
+.vscode/
+.DS_Store
