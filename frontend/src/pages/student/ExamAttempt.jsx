@@ -177,15 +177,15 @@ const ExamAttempt = () => {
     let frameInterval;
     if (cameraStream && videoRef.current && attempt) {
       const canvas = document.createElement('canvas');
-      // Keep resolution very low to eliminate lag and reduce payload size (e.g. 160x120)
-      canvas.width = 160;
-      canvas.height = 120;
+      // Increased resolution back to 320x240 for clarity
+      canvas.width = 320;
+      canvas.height = 240;
       const ctx = canvas.getContext('2d');
 
       frameInterval = setInterval(() => {
         if (videoRef.current && videoRef.current.readyState >= 2) {
           ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-          const frameData = canvas.toDataURL('image/jpeg', 0.3);
+          const frameData = canvas.toDataURL('image/jpeg', 0.4);
           websocketService.sendVideoFrame({
             examId: attempt.examId,
             attemptId: attempt.id,
@@ -196,7 +196,7 @@ const ExamAttempt = () => {
             timestamp: new Date().toISOString()
           });
         }
-      }, 2000); // 1 frame every 2 seconds to prevent WebSocket lag
+      }, 200); // 5 FPS (1 frame every 200ms) to simulate faster video
     }
 
     return () => {
