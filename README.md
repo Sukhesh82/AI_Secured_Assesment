@@ -10,7 +10,7 @@ SecureAI ExamGuard is a full-stack, highly secure online examination platform de
 
 ---
 
-## ? Key Features
+## Key Features ??
 
 ### ????? For Students
 * **Strict Full-Screen Enforcement:** Exams cannot be taken unless the browser is locked in full-screen mode.
@@ -18,7 +18,7 @@ SecureAI ExamGuard is a full-stack, highly secure online examination platform de
 * **Dynamic Warning System:** Students receive instant visual popups when they commit a violation, displaying their remaining attempts.
 * **Seamless Exam Interface:** An intuitive UI to mark questions for review, clear responses, and navigate easily.
 
-### ????? For Faculty & Proctors
+###  For Faculty & Proctors ?????
 * **Live Global Monitoring:** An administrative dashboard that tracks all active exams and categorizes students by risk level (High/Medium/Low).
 * **Real-Time Proctoring Feed:** Uses WebSockets to stream live webcam snapshots and behavioral alerts directly to the admin without refreshing.
 * **Auto-Submission on Violations:** If a student switches tabs, attempts to copy-paste, or exits full-screen beyond their allowed threshold, the system instantly flags and auto-submits their exam.
@@ -26,7 +26,7 @@ SecureAI ExamGuard is a full-stack, highly secure online examination platform de
 
 ---
 
-## ??? Technical Architecture
+##  Technical Architecture  ???
 
 * **Frontend:** React.js, Vite, Tailwind CSS, Axios
 * **Backend:** Java, Spring Boot, Spring Security (JWT)
@@ -36,7 +36,7 @@ SecureAI ExamGuard is a full-stack, highly secure online examination platform de
 
 ---
 
-## ?? Running Locally
+##  Running Locally ??
 
 To run this project on your local machine:
 
