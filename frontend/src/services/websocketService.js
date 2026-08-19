@@ -15,9 +15,7 @@ class WebSocketService {
     }
 
     const token = localStorage.getItem('jwt_token');
-    const wsUrl = window.location.protocol === 'https:' 
-      ? `https://${window.location.host}/ws` 
-      : `http://${window.location.host}/ws`;
+    const wsUrl = 'https://ai-secured-assesment.onrender.com/ws';
 
     const socket = new SockJS(`${wsUrl}?token=${token || ''}`);
 
