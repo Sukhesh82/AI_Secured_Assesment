@@ -4,7 +4,7 @@
 
 SecureAI ExamGuard is a full-stack, highly secure online examination platform designed to enforce academic integrity in remote learning environments. Built with a modern React frontend and a robust Java Spring Boot backend, the system actively monitors students during exams and automatically flags or submits exams if malpractice is detected.
 
-## ?? Live Demo
+##  Live Demo ??
 - **Frontend Application:** [https://ai-secured-assesment.vercel.app](https://ai-secured-assesment.vercel.app)
 - *(Note: Initial backend requests may take 30-50 seconds to wake up the free-tier server).*
 
@@ -12,7 +12,7 @@ SecureAI ExamGuard is a full-stack, highly secure online examination platform de
 
 ## Key Features ??
 
-### ????? For Students
+###  For Students ????
 * **Strict Full-Screen Enforcement:** Exams cannot be taken unless the browser is locked in full-screen mode.
 * **Server-Synced Timers:** Real-time countdowns that automatically submit the exam the moment time expires.
 * **Dynamic Warning System:** Students receive instant visual popups when they commit a violation, displaying their remaining attempts.
