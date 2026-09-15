@@ -186,6 +186,17 @@ const Login = () => {
                 </div>
               ) : (
                 <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+                  {loginMode === 'ADMIN' && (
+                    <div className="bg-brand-500/10 border border-brand-500/30 rounded-lg p-4 mb-2 flex items-start text-sm">
+                      <Key className="w-5 h-5 text-brand-400 mr-3 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-white font-bold mb-1">Demo Credentials</p>
+                        <p className="text-gray-300 font-medium">Email: <span className="text-brand-400 font-mono select-all">admin@examguard.com</span></p>
+                        <p className="text-gray-300 font-medium">Password: <span className="text-brand-400 font-mono select-all">admin123</span></p>
+                      </div>
+                    </div>
+                  )}
+
                   {error && (
                     <div className="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-md">
                       <p className="text-sm text-red-400 font-medium">{error}</p>
