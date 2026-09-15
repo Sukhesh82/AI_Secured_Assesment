@@ -191,8 +191,8 @@ const Login = () => {
                       <Key className="w-5 h-5 text-brand-400 mr-3 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-white font-bold mb-1">Demo Credentials</p>
-                        <p className="text-gray-300 font-medium">Email: <span className="text-brand-400 font-mono select-all">admin@examguard.com</span></p>
-                        <p className="text-gray-300 font-medium">Password: <span className="text-brand-400 font-mono select-all">admin123</span></p>
+                        <p className="text-gray-300 font-medium">Email: <span className="text-brand-400 font-mono select-all">admin@gmail.com</span></p>
+                        <p className="text-gray-300 font-medium">Password: <span className="text-brand-400 font-mono select-all">Admin@123</span></p>
                       </div>
                     </div>
                   )}
