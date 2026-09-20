@@ -425,7 +425,7 @@ const ExamAttempt = () => {
           </div>
           <div>
             <h1 className="text-lg font-bold leading-tight">{attempt?.examTitle}</h1>
-            <p className="text-xs text-blue-100 font-medium">Candidate: {attempt?.studentName} | Roll No: {user?.studentId || 'N/A'}</p>
+            <p className="text-xs text-blue-100 font-medium">Candidate: {attempt?.studentName} | Roll No: {user?.studentId || '-'}</p>
           </div>
         </div>
         <div className="flex items-center space-x-6">
@@ -468,8 +468,12 @@ const ExamAttempt = () => {
                 <p className="font-semibold text-gray-800">{attempt?.studentName}</p>
               </div>
               <div>
+                <p className="text-gray-500 text-xs">Roll No</p>
+                <p className="font-semibold text-gray-800">{user?.studentId || '-'}</p>
+              </div>
+              <div>
                 <p className="text-gray-500 text-xs">Section</p>
-                <p className="font-semibold text-gray-800">General Section</p>
+                <p className="font-semibold text-gray-800">Multiple Choice Questions (MCQ)</p>
               </div>
             </div>
           </div>
@@ -492,7 +496,7 @@ const ExamAttempt = () => {
               {/* Question Body Scrollable */}
               <div className="flex-1 overflow-y-auto p-8">
                 <div className="max-w-4xl mx-auto">
-                  <div className="text-base text-gray-800 mb-8 whitespace-pre-wrap font-medium">
+                  <div className="text-lg text-gray-800 mb-8 whitespace-pre-wrap font-medium">
                     {currentQ.questionText}
                   </div>
 
@@ -515,9 +519,9 @@ const ExamAttempt = () => {
                                 {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>}
                               </div>
                             </div>
-                            <div>
-                              <span className="font-bold text-gray-700 mr-2">{key}.</span>
-                              <span className="text-gray-800">{value}</span>
+                            <div className="text-base text-gray-800">
+                              <span className="font-bold mr-2">{key}.</span>
+                              <span>{value}</span>
                             </div>
                             <input 
                               type="radio" 
@@ -538,11 +542,16 @@ const ExamAttempt = () => {
               <div className="bg-gray-100 border-t border-gray-200 px-6 py-4 flex justify-between items-center shrink-0 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
                 <div className="flex space-x-3">
                   <button
-                    onClick={() => toggleReview(currentQ.id)}
+                    onClick={() => {
+                      toggleReview(currentQ.id);
+                      if (currentQuestionIndex < attempt.questions.length - 1) {
+                        setCurrentQuestionIndex(currentQuestionIndex + 1);
+                      }
+                    }}
                     className="px-5 py-2.5 text-sm font-bold rounded shadow-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                   >
                     <HelpCircle className={`w-4 h-4 mr-2 ${markedForReview[currentQ.id] ? 'text-purple-600' : 'text-gray-400'}`} />
-                    {markedForReview[currentQ.id] ? 'Unmark Review' : 'Mark for Review'}
+                    {markedForReview[currentQ.id] ? 'Unmark & Next' : 'Mark for Review & Next'}
                   </button>
                   <button
                     onClick={() => handleClearResponse(currentQ.id)}
@@ -585,7 +594,7 @@ const ExamAttempt = () => {
               <div className="flex items-center"><div className="w-5 h-5 rounded-tl-lg rounded-tr-lg rounded-bl-lg flex items-center justify-center text-white bg-red-500 border border-red-600 mr-2 shadow-sm">{paletteCounts.NOT_ANSWERED}</div> Not Answered</div>
               <div className="flex items-center"><div className="w-5 h-5 rounded-tl-lg rounded-tr-lg rounded-br-lg flex items-center justify-center text-white bg-green-600 border border-green-700 mr-2 shadow-sm">{paletteCounts.ANSWERED}</div> Answered</div>
               <div className="flex items-center"><div className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-purple-600 border border-purple-700 mr-2 shadow-sm">{paletteCounts.MARKED}</div> Marked</div>
-              <div className="flex items-center col-span-2 mt-1"><div className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-purple-600 border border-purple-700 relative mr-2 shadow-sm"><div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-3 h-3 flex items-center justify-center border border-white"><CheckCircle className="w-2 h-2 text-white" /></div></div> Answered & Marked</div>
+              <div className="flex items-center col-span-2 mt-1"><div className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-purple-600 border border-purple-700 relative mr-2 shadow-sm">{paletteCounts.ANSWERED_MARKED}<div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-3 h-3 flex items-center justify-center border border-white"><CheckCircle className="w-2 h-2 text-white" /></div></div> Answered & Marked</div>
             </div>
           </div>
 
