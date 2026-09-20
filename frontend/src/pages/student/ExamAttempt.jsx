@@ -13,6 +13,7 @@ const ExamAttempt = () => {
   const [attempt, setAttempt] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [visited, setVisited] = useState({ 0: true });
   const [answers, setAnswers] = useState({});
   const [markedForReview, setMarkedForReview] = useState({});
   const [remainingTime, setRemainingTime] = useState(0);
@@ -162,6 +163,10 @@ const ExamAttempt = () => {
       startCamera();
     }
   }, [loading, error, attempt]);
+
+  useEffect(() => {
+    setVisited(prev => ({ ...prev, [currentQuestionIndex]: true }));
+  }, [currentQuestionIndex]);
 
   // Ensure stream is attached to video element when it mounts
   useEffect(() => {
@@ -360,9 +365,25 @@ const ExamAttempt = () => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
+
+  const getQuestionState = (qId, idx) => {
+    const isAnswered = !!answers[qId];
+    const isMarked = !!markedForReview[qId];
+    const isVisited = !!visited[idx];
+
+    if (!isVisited) return 'NOT_VISITED';
+    if (isAnswered && isMarked) return 'ANSWERED_MARKED';
+    if (isMarked) return 'MARKED';
+    if (isAnswered) return 'ANSWERED';
+    return 'NOT_ANSWERED';
+  };
+
+  const paletteCounts = questions.reduce((acc, q, idx) => {
+    acc[getQuestionState(q.id, idx)]++;
+    return acc;
+  }, { NOT_VISITED: 0, NOT_ANSWERED: 0, ANSWERED: 0, MARKED: 0, ANSWERED_MARKED: 0 });
 
   if (loading) return <div className="flex h-screen items-center justify-center">Loading Exam Environment...</div>;
   if (error) return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
@@ -396,33 +417,31 @@ const ExamAttempt = () => {
   const currentQ = questions[currentQuestionIndex];
 
   return (
-    <div className="flex flex-col h-screen bg-gray-800 select-none">
-      {/* Top Bar */}
-      <header className="bg-[#131316] shadow-sm border-b px-6 py-3 flex justify-between items-center z-10">
-        <div>
-          <h1 className="text-xl font-bold text-gray-200">{attempt?.examTitle}</h1>
-          <p className="text-sm text-gray-400">{attempt?.studentName} ({attempt?.studentEmail})</p>
+    <div className="flex flex-col h-screen bg-gray-50 select-none font-sans text-gray-800 overflow-hidden">
+      {/* Top Header */}
+      <header className="bg-blue-700 text-white shadow-md border-b border-blue-800 px-4 py-2 flex justify-between items-center z-20 shrink-0">
+        <div className="flex items-center space-x-4">
+          <div className="h-10 w-10 bg-white text-blue-700 rounded-full flex items-center justify-center font-bold text-xl overflow-hidden shadow-inner">
+            {attempt?.studentName?.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-lg font-bold leading-tight">{attempt?.examTitle}</h1>
+            <p className="text-xs text-blue-100 font-medium">Candidate: {attempt?.studentName} | Roll No: {user?.studentId || 'N/A'}</p>
+          </div>
         </div>
         <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2 text-lg font-bold text-red-400">
+          <div className={`flex items-center space-x-2 text-xl font-bold px-4 py-1.5 rounded bg-black/20 border border-black/10 shadow-inner ${remainingTime <= 300 ? 'text-red-300 animate-pulse' : 'text-white'}`}>
             <Clock className="w-5 h-5" />
-            <span>{formatTime(remainingTime)}</span>
+            <span className="font-mono tracking-widest">{formatTime(remainingTime)}</span>
           </div>
-          <button
-            onClick={handleSubmitExam}
-            className="px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 flex items-center"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            Submit Exam
-          </button>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Camera Only */}
-        <aside className="w-64 bg-[#131316] border-r flex flex-col">
-          <div className="p-4">
-            <div className="bg-black w-full aspect-video rounded overflow-hidden flex items-center justify-center relative">
+        {/* Left Panel: Camera & Candidate Details */}
+        <aside className="w-56 bg-white border-r border-gray-200 flex flex-col shrink-0 shadow-sm z-10">
+          <div className="p-3 border-b border-gray-200 bg-gray-50">
+            <div className="bg-black w-full aspect-video rounded overflow-hidden flex items-center justify-center relative shadow-inner border border-gray-300">
               <video 
                 ref={videoRef} 
                 autoPlay 
@@ -437,71 +456,108 @@ const ExamAttempt = () => {
                 </div>
               )}
             </div>
-            <div className="mt-2 text-xs text-center text-gray-400 font-medium">Live Proctoring Active</div>
+            <div className="mt-3 flex items-center justify-center space-x-1.5">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+              <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">Live Proctoring</span>
+            </div>
+          </div>
+          <div className="p-4 bg-white flex-1">
+            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider border-b pb-2 mb-3">Candidate Details</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="text-gray-500 text-xs">Name</p>
+                <p className="font-semibold text-gray-800">{attempt?.studentName}</p>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs">Section</p>
+                <p className="font-semibold text-gray-800">General Section</p>
+              </div>
+            </div>
           </div>
         </aside>
 
         {/* Main Content: Question */}
-        <main className="flex-1 overflow-y-auto p-8 relative">
+        <main className="flex-1 flex flex-col bg-white relative">
           {currentQ && (
-            <div className="max-w-4xl mx-auto bg-[#131316] rounded-lg shadow-sm border p-8">
-              <div className="flex justify-between items-center mb-6 border-b pb-4">
-                <h2 className="text-xl font-bold text-gray-200">Question {currentQuestionIndex + 1}</h2>
-                <div className="text-sm font-medium text-gray-400">Marks: {currentQ.marks}</div>
+            <>
+              {/* Question Header */}
+              <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 flex justify-between items-center shrink-0">
+                <h2 className="text-lg font-bold text-gray-800">Question {currentQuestionIndex + 1} of {questions.length}</h2>
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm font-semibold text-gray-600 bg-white px-3 py-1 border border-gray-200 rounded shadow-sm">
+                    Marks: <span className="text-green-600">+{currentQ.marks}</span> / <span className="text-red-500">-0.5</span>
+                  </div>
+                </div>
               </div>
               
-              <div className="text-lg text-gray-200 mb-8 whitespace-pre-wrap">
-                {currentQ.questionText}
-              </div>
-
-              <div className="space-y-3">
-                {Object.entries(currentQ.options)
-                  .filter(([key, value]) => value !== null && value.trim() !== '')
-                  .map(([key, value]) => (
-                  <div 
-                    key={key}
-                    onClick={() => handleAnswerSelect(currentQ.id, key)}
-                    className={`p-4 border rounded-md cursor-pointer transition-colors flex items-center
-                      ${answers[currentQ.id] === key 
-                        ? 'border-brand-500 bg-brand-500/10' 
-                        : 'border-gray-800 hover:bg-gray-800/30'}`}
-                  >
-                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center mr-4 
-                      ${answers[currentQ.id] === key ? 'border-brand-500 bg-brand-500/100 text-white' : 'border-gray-400'}`}>
-                      {answers[currentQ.id] === key && <CheckCircle className="w-4 h-4" />}
-                    </div>
-                    <span className="font-medium text-gray-300 mr-4">{key}.</span>
-                    <span className="text-gray-200">{value}</span>
+              {/* Question Body Scrollable */}
+              <div className="flex-1 overflow-y-auto p-8">
+                <div className="max-w-4xl mx-auto">
+                  <div className="text-base text-gray-800 mb-8 whitespace-pre-wrap font-medium">
+                    {currentQ.questionText}
                   </div>
-                ))}
+
+                  <div className="space-y-4">
+                    {Object.entries(currentQ.options)
+                      .filter(([key, value]) => value !== null && value.trim() !== '')
+                      .map(([key, value]) => {
+                        const isSelected = answers[currentQ.id] === key;
+                        return (
+                          <label 
+                            key={key}
+                            className={`p-4 border rounded-lg cursor-pointer transition-all flex items-start group
+                              ${isSelected 
+                                ? 'border-blue-600 bg-blue-50 shadow-sm ring-1 ring-blue-600' 
+                                : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}
+                          >
+                            <div className="pt-0.5 flex items-center justify-center mr-4 shrink-0">
+                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                                ${isSelected ? 'border-blue-600' : 'border-gray-400 group-hover:border-blue-400'}`}>
+                                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-blue-600"></div>}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="font-bold text-gray-700 mr-2">{key}.</span>
+                              <span className="text-gray-800">{value}</span>
+                            </div>
+                            <input 
+                              type="radio" 
+                              name={`question-${currentQ.id}`} 
+                              value={key} 
+                              checked={isSelected}
+                              onChange={() => handleAnswerSelect(currentQ.id, key)} 
+                              className="hidden" 
+                            />
+                          </label>
+                        );
+                      })}
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t flex justify-between items-center">
-                <div className="space-x-3">
+              {/* Bottom Actions Footer */}
+              <div className="bg-gray-100 border-t border-gray-200 px-6 py-4 flex justify-between items-center shrink-0 shadow-[0_-2px_10px_rgba(0,0,0,0.02)]">
+                <div className="flex space-x-3">
                   <button
                     onClick={() => toggleReview(currentQ.id)}
-                    className={`px-4 py-2 text-sm font-medium rounded border ${
-                      markedForReview[currentQ.id] 
-                        ? 'bg-purple-100 text-purple-700 border-purple-300 hover:bg-purple-200' 
-                        : 'bg-[#131316] text-gray-300 border-gray-700 hover:bg-gray-800/30'
-                    } flex items-center inline-flex`}
+                    className="px-5 py-2.5 text-sm font-bold rounded shadow-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                   >
-                    <HelpCircle className="w-4 h-4 mr-2" />
+                    <HelpCircle className={`w-4 h-4 mr-2 ${markedForReview[currentQ.id] ? 'text-purple-600' : 'text-gray-400'}`} />
                     {markedForReview[currentQ.id] ? 'Unmark Review' : 'Mark for Review'}
                   </button>
                   <button
                     onClick={() => handleClearResponse(currentQ.id)}
-                    className="px-4 py-2 text-sm font-medium rounded bg-[#131316] text-gray-300 border border-gray-700 hover:bg-gray-800/30"
+                    className="px-5 py-2.5 text-sm font-bold rounded shadow-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Clear Response
                   </button>
                 </div>
 
-                <div className="space-x-3 flex">
+                <div className="flex space-x-3">
                   <button
                     onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                     disabled={currentQuestionIndex === 0}
-                    className="px-4 py-2 bg-[#131316] border rounded text-gray-300 hover:bg-gray-800/30 disabled:opacity-50 flex items-center"
+                    className="px-5 py-2.5 bg-white border border-gray-300 shadow-sm rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50 font-bold flex items-center transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Previous
@@ -509,65 +565,93 @@ const ExamAttempt = () => {
                   <button
                     onClick={() => setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1))}
                     disabled={currentQuestionIndex === questions.length - 1}
-                    className="px-4 py-2 bg-brand-600 border border-transparent rounded text-white hover:bg-brand-700 disabled:opacity-50 flex items-center"
+                    className="px-6 py-2.5 bg-blue-700 shadow-md rounded text-white hover:bg-blue-800 disabled:opacity-50 font-bold flex items-center transition-colors"
                   >
-                    Next
+                    Save & Next
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </button>
                 </div>
               </div>
-            </div>
+            </>
           )}
         </main>
 
         {/* Right Panel: Navigation Grid */}
-        <aside className="w-64 bg-[#131316] border-l flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-3">Questions Overview</h3>
-            <div className="grid grid-cols-4 gap-2">
+        <aside className="w-72 bg-gray-50 border-l border-gray-200 flex flex-col shrink-0 shadow-sm z-10">
+          
+          <div className="p-4 border-b border-gray-200 bg-white">
+            <h3 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Question Palette</h3>
+            <div className="grid grid-cols-2 gap-y-2 gap-x-2 text-xs font-semibold text-gray-600">
+              <div className="flex items-center"><div className="w-5 h-5 rounded-full flex items-center justify-center text-gray-700 bg-gray-200 border border-gray-400 mr-2 shadow-sm">{paletteCounts.NOT_VISITED}</div> Not Visited</div>
+              <div className="flex items-center"><div className="w-5 h-5 rounded-tl-lg rounded-tr-lg rounded-bl-lg flex items-center justify-center text-white bg-red-500 border border-red-600 mr-2 shadow-sm">{paletteCounts.NOT_ANSWERED}</div> Not Answered</div>
+              <div className="flex items-center"><div className="w-5 h-5 rounded-tl-lg rounded-tr-lg rounded-br-lg flex items-center justify-center text-white bg-green-600 border border-green-700 mr-2 shadow-sm">{paletteCounts.ANSWERED}</div> Answered</div>
+              <div className="flex items-center"><div className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-purple-600 border border-purple-700 mr-2 shadow-sm">{paletteCounts.MARKED}</div> Marked</div>
+              <div className="flex items-center col-span-2 mt-1"><div className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-purple-600 border border-purple-700 relative mr-2 shadow-sm"><div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-3 h-3 flex items-center justify-center border border-white"><CheckCircle className="w-2 h-2 text-white" /></div></div> Answered & Marked</div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Questions</h4>
+            <div className="grid grid-cols-5 gap-2">
               {questions.map((q, idx) => {
-                let btnClass = "w-10 h-10 rounded flex items-center justify-center text-sm font-medium border cursor-pointer ";
+                const state = getQuestionState(q.id, idx);
+                let btnClass = "w-10 h-10 flex items-center justify-center text-sm font-bold shadow-sm transition-transform hover:scale-105 cursor-pointer relative ";
                 
-                if (idx === currentQuestionIndex) {
-                  btnClass += "ring-2 ring-brand-500 border-transparent ";
-                } else {
-                  btnClass += "border-gray-700 hover:bg-gray-800 ";
+                // Base shapes and colors for 5 states
+                if (state === 'NOT_VISITED') {
+                  btnClass += "rounded-full bg-gray-200 text-gray-700 border border-gray-400 hover:bg-gray-300";
+                } else if (state === 'NOT_ANSWERED') {
+                  btnClass += "rounded-tl-lg rounded-tr-lg rounded-bl-lg bg-red-500 text-white border border-red-600 hover:bg-red-600";
+                } else if (state === 'ANSWERED') {
+                  btnClass += "rounded-tl-lg rounded-tr-lg rounded-br-lg bg-green-600 text-white border border-green-700 hover:bg-green-700";
+                } else if (state === 'MARKED') {
+                  btnClass += "rounded-full bg-purple-600 text-white border border-purple-700 hover:bg-purple-700";
+                } else if (state === 'ANSWERED_MARKED') {
+                  btnClass += "rounded-full bg-purple-600 text-white border border-purple-700 hover:bg-purple-700";
                 }
 
-                if (markedForReview[q.id]) {
-                  btnClass += "bg-purple-100 text-purple-700 border-purple-300";
-                } else if (answers[q.id]) {
-                  btnClass += "bg-green-100 text-green-400 border-green-300";
-                } else {
-                  btnClass += "bg-[#131316] text-gray-400";
+                if (idx === currentQuestionIndex) {
+                  btnClass += " ring-2 ring-offset-2 ring-blue-500";
                 }
 
                 return (
-                  <button
-                    key={q.id}
-                    onClick={() => setCurrentQuestionIndex(idx)}
-                    className={btnClass}
-                  >
-                    {idx + 1}
-                  </button>
+                  <div key={q.id} className="relative flex justify-center">
+                    <button
+                      onClick={() => setCurrentQuestionIndex(idx)}
+                      className={btnClass}
+                    >
+                      {idx + 1}
+                    </button>
+                    {state === 'ANSWERED_MARKED' && (
+                      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full w-4 h-4 flex items-center justify-center border-2 border-white shadow-sm z-10 pointer-events-none">
+                        <CheckCircle className="w-2.5 h-2.5 text-white" />
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-            
-            <div className="mt-6 space-y-2 text-xs text-gray-400">
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-green-100 border border-green-300 mr-2"></div> Answered</div>
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-purple-100 border border-purple-300 mr-2"></div> Marked for Review</div>
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-[#131316] border border-gray-700 mr-2"></div> Not Answered</div>
-            </div>
+          </div>
+          
+          {/* Submit Exam Button */}
+          <div className="p-4 bg-white border-t border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
+            <button
+              onClick={handleSubmitExam}
+              className="w-full py-3.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-md flex items-center justify-center transition-all hover:-translate-y-0.5"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Submit Exam
+            </button>
           </div>
         </aside>
       </div>
 
       {showViolationWarning && (
-        <div className="fixed bottom-6 right-6 bg-[#131316] border border-gray-700 rounded-lg shadow-2xl p-4 flex items-center z-50 transition-all duration-300 transform max-w-sm">
-          <AlertTriangle className="w-5 h-5 text-red-500 mr-3 flex-shrink-0" />
-          <div className="text-sm text-gray-200 leading-snug">
-            <span className="text-red-500 font-bold">Warning:</span> Violation recorded. Remaining attempts: {violationCount}/{attempt?.maxViolations}. Auto-submit on the final violation.
+        <div className="fixed top-20 right-6 bg-white border-l-4 border-red-500 rounded-lg shadow-2xl p-4 flex items-center z-50 transition-all duration-300 transform max-w-sm">
+          <AlertTriangle className="w-6 h-6 text-red-500 mr-3 flex-shrink-0" />
+          <div className="text-sm text-gray-800 leading-snug">
+            <span className="text-red-600 font-bold block mb-0.5">Warning: Violation recorded!</span> 
+            Remaining attempts: {violationCount}/{attempt?.maxViolations}. Auto-submit on the final violation.
           </div>
         </div>
       )}
