@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Shield, User, Eye, EyeOff, Camera, FileText, Clock, Key, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Shield, User, Eye, EyeOff, Camera, FileText, Clock, Key, ShieldCheck, CheckCircle, IdCard } from 'lucide-react';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [studentId, setStudentId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,10 +33,17 @@ const Register = () => {
       return;
     }
 
+    const regNo = studentId.trim().toUpperCase();
+    const regNoRegex = /^[A-Z0-9]{6,20}$/;
+    if (!regNoRegex.test(regNo)) {
+      setError('Registration Number must be 6-20 alphanumeric characters.');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      await register(name, email, password, 'STUDENT');
+      await register(name, email, password, 'STUDENT', regNo);
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -196,6 +204,27 @@ const Register = () => {
                     />
                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                       <User className="h-5 w-5 text-gray-500" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="studentId" className="block text-sm font-semibold text-gray-300 mb-2">
+                    Registration Number
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="studentId"
+                      name="studentId"
+                      type="text"
+                      required
+                      value={studentId}
+                      onChange={(e) => setStudentId(e.target.value)}
+                      className="block w-full pl-4 pr-10 py-3.5 text-sm text-white border border-gray-700 rounded-xl bg-[#222224] focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-colors placeholder-gray-500 outline-none uppercase"
+                      placeholder="Enter your registration number"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                      <IdCard className="h-5 w-5 text-gray-500" />
                     </div>
                   </div>
                 </div>

@@ -41,6 +41,12 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("Email is already registered: " + request.getEmail());
         }
+        
+        if (request.getStudentId() != null && !request.getStudentId().trim().isEmpty()) {
+            if (userRepository.existsByStudentId(request.getStudentId().trim())) {
+                throw new BadRequestException("This registration number is already registered.");
+            }
+        }
 
         Role userRole = request.getRole() != null ? request.getRole() : Role.STUDENT;
 

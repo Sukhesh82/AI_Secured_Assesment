@@ -425,7 +425,7 @@ const ExamAttempt = () => {
           </div>
           <div>
             <h1 className="text-lg font-bold leading-tight">{attempt?.examTitle}</h1>
-            <p className="text-xs text-blue-100 font-medium">Candidate: {attempt?.studentName} | Roll No: {user?.studentId || '-'}</p>
+            <p className="text-xs text-blue-100 font-medium">Candidate: {attempt?.studentName} | Reg No: {user?.studentId || '-'}</p>
           </div>
         </div>
         <div className="flex items-center space-x-6">
@@ -468,7 +468,7 @@ const ExamAttempt = () => {
                 <p className="font-semibold text-gray-800">{attempt?.studentName}</p>
               </div>
               <div>
-                <p className="text-gray-500 text-xs">Roll No</p>
+                <p className="text-gray-500 text-xs">Registration No</p>
                 <p className="font-semibold text-gray-800">{user?.studentId || '-'}</p>
               </div>
               <div>
