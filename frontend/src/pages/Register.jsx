@@ -219,8 +219,8 @@ const Register = () => {
                       type="text"
                       required
                       value={studentId}
-                      onChange={(e) => setStudentId(e.target.value)}
-                      className="block w-full pl-4 pr-10 py-3.5 text-sm text-white border border-gray-700 rounded-xl bg-[#222224] focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-colors placeholder-gray-500 outline-none uppercase"
+                      onChange={(e) => setStudentId(e.target.value.toUpperCase())}
+                      className="block w-full pl-4 pr-10 py-3.5 text-sm text-white border border-gray-700 rounded-xl bg-[#222224] focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-colors placeholder-gray-500 outline-none"
                       placeholder="Enter your registration number"
                     />
                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">

@@ -44,7 +44,7 @@ public class AuthService {
         
         if (request.getStudentId() != null && !request.getStudentId().trim().isEmpty()) {
             if (userRepository.existsByStudentId(request.getStudentId().trim())) {
-                throw new BadRequestException("This registration number is already registered.");
+                throw new BadRequestException("This registration number is already exists");
             }
         }
 
