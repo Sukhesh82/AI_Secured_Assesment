@@ -20,7 +20,7 @@ const ExamAttempt = () => {
   
   const [violationCount, setViolationCount] = useState(0);
   const [showViolationWarning, setShowViolationWarning] = useState(false);
-  
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -333,17 +333,16 @@ const ExamAttempt = () => {
   };
 
   const handleSubmitExam = async () => {
-    if (window.confirm('Are you sure you want to submit the exam? Once submitted, you cannot change your answers.')) {
-      try {
-        await api.post(`/student/attempts/${attemptId}/submit`);
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
-        }
-        stopCamera();
-        navigate('/student/results');
-      } catch (err) {
-        alert('Failed to submit exam. Please try again.');
+    try {
+      setShowSubmitConfirm(false);
+      await api.post(`/student/attempts/${attemptId}/submit`);
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
       }
+      stopCamera();
+      navigate('/student/results');
+    } catch (err) {
+      alert('Failed to submit exam. Please try again.');
     }
   };
 
@@ -636,7 +635,7 @@ const ExamAttempt = () => {
           {/* Submit Exam Button */}
           <div className="p-4 bg-white border-t border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
             <button
-              onClick={handleSubmitExam}
+              onClick={() => setShowSubmitConfirm(true)}
               className="w-full py-3.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-md flex items-center justify-center transition-all hover:-translate-y-0.5"
             >
               <Send className="w-4 h-4 mr-2" />
@@ -652,6 +651,65 @@ const ExamAttempt = () => {
           <div className="text-sm text-gray-800 leading-snug">
             <span className="text-red-600 font-bold block mb-0.5">Warning: Violation recorded!</span> 
             Remaining attempts: {violationCount}/{attempt?.maxViolations}. Auto-submit on the final violation.
+          </div>
+        </div>
+      )}
+
+      {/* Submit Confirmation Modal */}
+      {showSubmitConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col">
+            <div className="px-6 py-4 bg-blue-700 text-white border-b border-blue-800 flex justify-between items-center">
+              <h2 className="text-xl font-bold">Submit Exam?</h2>
+              <div className="flex items-center text-red-200 bg-black/20 px-3 py-1 rounded font-mono font-bold text-sm">
+                <Clock className="w-4 h-4 mr-2" />
+                Time Left: {formatTime(remainingTime)}
+              </div>
+            </div>
+            
+            <div className="p-6">
+              <p className="text-gray-600 mb-6 font-medium text-center">Are you sure you want to submit? Once submitted, you cannot review or change your answers.</p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center shadow-sm">
+                  <div className="text-3xl font-bold text-green-700 mb-1">{paletteCounts.ANSWERED}</div>
+                  <div className="text-xs font-bold text-green-700 uppercase tracking-wide">Answered</div>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center relative shadow-sm">
+                  <div className="absolute top-2 right-2"><CheckCircle className="w-4 h-4 text-green-500" /></div>
+                  <div className="text-3xl font-bold text-purple-700 mb-1">{paletteCounts.ANSWERED_MARKED}</div>
+                  <div className="text-xs font-bold text-purple-700 uppercase tracking-wide">Ans & Marked</div>
+                </div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center shadow-sm">
+                  <div className="text-3xl font-bold text-red-600 mb-1">{paletteCounts.NOT_ANSWERED}</div>
+                  <div className="text-xs font-bold text-red-600 uppercase tracking-wide">Not Answered</div>
+                </div>
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center shadow-sm">
+                  <div className="text-3xl font-bold text-purple-700 mb-1">{paletteCounts.MARKED}</div>
+                  <div className="text-xs font-bold text-purple-700 uppercase tracking-wide">Marked</div>
+                </div>
+                <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 text-center col-span-2 shadow-sm">
+                  <div className="text-3xl font-bold text-gray-700 mb-1">{paletteCounts.NOT_VISITED}</div>
+                  <div className="text-xs font-bold text-gray-600 uppercase tracking-wide">Not Visited</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+              <button 
+                onClick={() => setShowSubmitConfirm(false)}
+                className="px-6 py-2.5 rounded-lg font-bold text-gray-600 bg-white border border-gray-300 hover:bg-gray-100 transition-colors shadow-sm"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSubmitExam}
+                className="px-6 py-2.5 rounded-lg font-bold text-white bg-blue-700 hover:bg-blue-800 transition-colors shadow-md flex items-center"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Confirm Submit
+              </button>
+            </div>
           </div>
         </div>
       )}
