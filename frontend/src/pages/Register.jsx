@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Shield, User, Eye, EyeOff, Camera, FileText, Clock, Key, ShieldCheck, CheckCircle, IdCard } from 'lucide-react';
+import { Shield, User, Eye, EyeOff, Camera, FileText, Clock, Key, ShieldCheck, CheckCircle, IdCard, Check, X } from 'lucide-react';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -18,12 +18,47 @@ const Register = () => {
   const { register, login } = useAuth();
   const navigate = useNavigate();
 
+  const checkPasswordStrength = (pass) => {
+    return {
+      length: pass.length >= 8,
+      uppercase: /[A-Z]/.test(pass),
+      lowercase: /[a-z]/.test(pass),
+      number: /[0-9]/.test(pass)
+    };
+  };
+
+  const strength = checkPasswordStrength(password);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    if (!strength.length || !strength.uppercase || !strength.lowercase || !strength.number) {
+      setError('Password is too weak. Please follow the rules shown below.');
+      return;
+    }
+
+    const commonPasswords = ['password', '12345678', 'qwerty123', 'password@123'];
+    const passLower = password.toLowerCase();
+    
+    if (commonPasswords.includes(passLower)) {
+      setError('Password is too weak. Please follow the rules shown below.');
+      return;
+    }
+
+    const emailName = email.split('@')[0].toLowerCase();
+    if (emailName && passLower.includes(emailName)) {
+      setError('Password is too weak. Please follow the rules shown below.');
+      return;
+    }
+
+    if (studentId && passLower.includes(studentId.toLowerCase())) {
+      setError('Password is too weak. Please follow the rules shown below.');
       return;
     }
 
@@ -253,6 +288,24 @@ const Register = () => {
                       ) : (
                         <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-300 transition-colors" />
                       )}
+                    </div>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-400">
+                    <div className="flex items-center space-x-1">
+                      {strength.length ? <Check className="w-3.5 h-3.5 text-green-500" /> : <X className="w-3.5 h-3.5 text-gray-500" />}
+                      <span className={strength.length ? "text-green-500" : ""}>8+ characters</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {strength.uppercase ? <Check className="w-3.5 h-3.5 text-green-500" /> : <X className="w-3.5 h-3.5 text-gray-500" />}
+                      <span className={strength.uppercase ? "text-green-500" : ""}>Uppercase letter</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {strength.lowercase ? <Check className="w-3.5 h-3.5 text-green-500" /> : <X className="w-3.5 h-3.5 text-gray-500" />}
+                      <span className={strength.lowercase ? "text-green-500" : ""}>Lowercase letter</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      {strength.number ? <Check className="w-3.5 h-3.5 text-green-500" /> : <X className="w-3.5 h-3.5 text-gray-500" />}
+                      <span className={strength.number ? "text-green-500" : ""}>Number</span>
                     </div>
                   </div>
                 </div>
