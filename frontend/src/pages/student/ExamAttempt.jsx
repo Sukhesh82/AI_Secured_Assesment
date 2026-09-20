@@ -419,9 +419,9 @@ const ExamAttempt = () => {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Camera & Navigation Grid */}
+        {/* Left Panel: Camera Only */}
         <aside className="w-64 bg-[#131316] border-r flex flex-col">
-          <div className="p-4 border-b">
+          <div className="p-4">
             <div className="bg-black w-full aspect-video rounded overflow-hidden flex items-center justify-center relative">
               <video 
                 ref={videoRef} 
@@ -438,45 +438,6 @@ const ExamAttempt = () => {
               )}
             </div>
             <div className="mt-2 text-xs text-center text-gray-400 font-medium">Live Proctoring Active</div>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-3">Questions Overview</h3>
-            <div className="grid grid-cols-4 gap-2">
-              {questions.map((q, idx) => {
-                let btnClass = "w-10 h-10 rounded flex items-center justify-center text-sm font-medium border cursor-pointer ";
-                
-                if (idx === currentQuestionIndex) {
-                  btnClass += "ring-2 ring-brand-500 border-transparent ";
-                } else {
-                  btnClass += "border-gray-700 hover:bg-gray-800 ";
-                }
-
-                if (markedForReview[q.id]) {
-                  btnClass += "bg-purple-100 text-purple-700 border-purple-300";
-                } else if (answers[q.id]) {
-                  btnClass += "bg-green-100 text-green-400 border-green-300";
-                } else {
-                  btnClass += "bg-[#131316] text-gray-400";
-                }
-
-                return (
-                  <button
-                    key={q.id}
-                    onClick={() => setCurrentQuestionIndex(idx)}
-                    className={btnClass}
-                  >
-                    {idx + 1}
-                  </button>
-                );
-              })}
-            </div>
-            
-            <div className="mt-6 space-y-2 text-xs text-gray-400">
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-green-100 border border-green-300 mr-2"></div> Answered</div>
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-purple-100 border border-purple-300 mr-2"></div> Marked for Review</div>
-              <div className="flex items-center"><div className="w-3 h-3 rounded bg-[#131316] border border-gray-700 mr-2"></div> Not Answered</div>
-            </div>
           </div>
         </aside>
 
@@ -558,6 +519,48 @@ const ExamAttempt = () => {
             </div>
           )}
         </main>
+
+        {/* Right Panel: Navigation Grid */}
+        <aside className="w-64 bg-[#131316] border-l flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4">
+            <h3 className="text-sm font-semibold text-gray-300 mb-3">Questions Overview</h3>
+            <div className="grid grid-cols-4 gap-2">
+              {questions.map((q, idx) => {
+                let btnClass = "w-10 h-10 rounded flex items-center justify-center text-sm font-medium border cursor-pointer ";
+                
+                if (idx === currentQuestionIndex) {
+                  btnClass += "ring-2 ring-brand-500 border-transparent ";
+                } else {
+                  btnClass += "border-gray-700 hover:bg-gray-800 ";
+                }
+
+                if (markedForReview[q.id]) {
+                  btnClass += "bg-purple-100 text-purple-700 border-purple-300";
+                } else if (answers[q.id]) {
+                  btnClass += "bg-green-100 text-green-400 border-green-300";
+                } else {
+                  btnClass += "bg-[#131316] text-gray-400";
+                }
+
+                return (
+                  <button
+                    key={q.id}
+                    onClick={() => setCurrentQuestionIndex(idx)}
+                    className={btnClass}
+                  >
+                    {idx + 1}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="mt-6 space-y-2 text-xs text-gray-400">
+              <div className="flex items-center"><div className="w-3 h-3 rounded bg-green-100 border border-green-300 mr-2"></div> Answered</div>
+              <div className="flex items-center"><div className="w-3 h-3 rounded bg-purple-100 border border-purple-300 mr-2"></div> Marked for Review</div>
+              <div className="flex items-center"><div className="w-3 h-3 rounded bg-[#131316] border border-gray-700 mr-2"></div> Not Answered</div>
+            </div>
+          </div>
+        </aside>
       </div>
 
       {showViolationWarning && (
