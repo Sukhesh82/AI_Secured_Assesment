@@ -102,7 +102,7 @@ const Privacy = () => {
           <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-medium text-gray-400">
             <a href="/privacy" className="text-white transition-colors">Privacy Policy</a>
             <a href="/terms" className="hover:text-white transition-colors">Terms of Use</a>
-            <a href="mailto:23h41a0582@bvcits.edu.in" className="hover:text-white transition-colors">Contact</a>
+            <a href="mailto:23h41a0582@gmail.com" className="hover:text-white transition-colors">Contact</a>
           </div>
 
         </div>
