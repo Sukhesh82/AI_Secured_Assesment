@@ -110,7 +110,6 @@ const Terms = () => {
             <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="/terms" className="text-white transition-colors">Terms of Use</a>
             <a href="mailto:23h41a0582@bvcits.edu.in" className="hover:text-white transition-colors">Contact</a>
-            <a href="https://github.com/Sukhesh82/AI_Secured_Assesment" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
 
         </div>
