@@ -544,9 +544,7 @@ const ExamAttempt = () => {
                   <button
                     onClick={() => {
                       toggleReview(currentQ.id);
-                      if (currentQuestionIndex < attempt.questions.length - 1) {
-                        setCurrentQuestionIndex(currentQuestionIndex + 1);
-                      }
+                      setCurrentQuestionIndex(prev => Math.min(questions.length - 1, prev + 1));
                     }}
                     className="px-5 py-2.5 text-sm font-bold rounded shadow-sm border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 flex items-center transition-colors"
                   >
