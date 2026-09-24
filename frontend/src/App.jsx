@@ -18,6 +18,8 @@ import AuditLogs from './pages/admin/AuditLogs';
 import Register from './pages/Register';
 import Landing from './pages/Landing';
 import Splash from './pages/Splash';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -187,8 +189,10 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Fallback */}
+        {/* Public Routes */}
         <Route path="/" element={<Landing />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         
         <Route path="*" element={
           <div className="flex h-screen items-center justify-center">

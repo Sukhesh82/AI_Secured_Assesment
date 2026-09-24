@@ -267,7 +267,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-4 text-center">
           <Headset className="w-5 h-5 text-brand-400" />
           <span className="text-gray-300 font-medium text-sm">Need help during your exam?</span>
-          <a href="mailto:support@secureai.exam" className="text-brand-400 hover:text-brand-300 font-bold text-sm transition-colors border-b border-brand-400/30 hover:border-brand-400">
+          <a href="mailto:23h41a0582@bvcits.edu.in" className="text-brand-400 hover:text-brand-300 font-bold text-sm transition-colors border-b border-brand-400/30 hover:border-brand-400">
             Contact Support
           </a>
         </div>
@@ -289,10 +289,10 @@ const Landing = () => {
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-6 text-sm font-medium text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Use</a>
-            <a href="mailto:support@secureai.exam" className="hover:text-white transition-colors">Contact</a>
-            <a href="#" className="hover:text-white transition-colors">GitHub</a>
+            <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="hover:text-white transition-colors">Terms of Use</a>
+            <a href="mailto:23h41a0582@bvcits.edu.in" className="hover:text-white transition-colors">Contact</a>
+            <a href="https://github.com/Sukhesh82/AI_Secured_Assesment" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
 
         </div>
