@@ -43,25 +43,6 @@ const Register = () => {
       return;
     }
 
-    const commonPasswords = ['password', '12345678', 'qwerty123', 'password@123'];
-    const passLower = password.toLowerCase();
-    
-    if (commonPasswords.includes(passLower)) {
-      setError('Password is too weak. Please follow the rules shown below.');
-      return;
-    }
-
-    const emailName = email.split('@')[0].toLowerCase();
-    if (emailName && passLower.includes(emailName)) {
-      setError('Password is too weak. Please follow the rules shown below.');
-      return;
-    }
-
-    if (studentId && passLower.includes(studentId.toLowerCase())) {
-      setError('Password is too weak. Please follow the rules shown below.');
-      return;
-    }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Please enter a valid Email address.');

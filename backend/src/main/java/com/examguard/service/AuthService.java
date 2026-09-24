@@ -53,25 +53,6 @@ public class AuthService {
             throw new BadRequestException("Password is too weak. Please follow the rules shown below.");
         }
 
-        String passLower = pass.toLowerCase();
-        java.util.List<String> commonPasswords = java.util.Arrays.asList("password", "12345678", "qwerty123", "password@123");
-        if (commonPasswords.contains(passLower)) {
-            throw new BadRequestException("Password is too weak. Please follow the rules shown below.");
-        }
-
-        String email = request.getEmail();
-        if (email != null && email.contains("@")) {
-            String emailName = email.split("@")[0].toLowerCase();
-            if (passLower.contains(emailName)) {
-                throw new BadRequestException("Password is too weak. Please follow the rules shown below.");
-            }
-        }
-
-        String regNo = request.getStudentId();
-        if (regNo != null && !regNo.isEmpty() && passLower.contains(regNo.toLowerCase())) {
-            throw new BadRequestException("Password is too weak. Please follow the rules shown below.");
-        }
-
         Role userRole = request.getRole() != null ? request.getRole() : Role.STUDENT;
 
         User user = User.builder()
